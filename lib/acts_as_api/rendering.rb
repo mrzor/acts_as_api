@@ -57,6 +57,10 @@ module ActsAsApi
 
       if api_model.is_a?(Array) || (defined?(ActiveRecord) && api_model.is_a?(ActiveRecord::Relation))
         api_root_name = api_root_name.pluralize
+
+        if ActsAsApi::Config.collection_root_override
+          api_root_name = ActsAsApi::Config.collection_root_override
+        end
       end
 
       api_root_name = api_root_name.dasherize if ActsAsApi::Config.dasherize_for.include? api_format.to_sym
@@ -77,7 +81,7 @@ module ActsAsApi
       end
 
       api_response = meta_hash.merge api_response if meta_hash
-      
+
       if ActsAsApi::Config.allow_jsonp_callback && params[:callback]
         output_params[:callback] = params[:callback]
         api_format = :acts_as_api_jsonp if ActsAsApi::Config.add_http_status_to_jsonp_response
